@@ -1,30 +1,48 @@
 package com.fuadhev.mytayqatask.ui.person
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.fuadhev.mytayqatask.R
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.fuadhev.mytayqatask.common.base.BaseFragment
-import com.fuadhev.mytayqatask.data.network.dto.People
+import com.fuadhev.mytayqatask.common.utils.isOnline
 import com.fuadhev.mytayqatask.databinding.FragmentPersonBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding::inflate) {
 
+    private val viewModel by viewModels<PersonViewModel>()
 
     private val personAdapter by lazy {
         PersonAdapter()
     }
 
+
     override fun observeEvents() {
+        viewModel.peopleData.observe(viewLifecycleOwner) {
+            personAdapter.submitList(it)
+        }
+
 
     }
 
+    override fun setupListeners() {
+        binding.icCountry.setOnClickListener {
+            findNavController().navigate(PersonFragmentDirections.actionPersonFragmentToCountryFilterDialogFragment())
+        }
+    }
+
+
+
     override fun onCreateFinish() {
-        binding.rvPerson.adapter=personAdapter
+
+
+        if (isOnline(requireContext())){
+            viewModel.getCountriesData()
+        }else{
+            viewModel.getPeoples()
+        }
+
+        binding.rvPerson.adapter = personAdapter
     }
 
 }

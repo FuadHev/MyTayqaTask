@@ -5,12 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuadhev.mytayqatask.common.utils.GenericDiffUtil
-import com.fuadhev.mytayqatask.data.network.dto.Country
-import com.fuadhev.mytayqatask.data.network.dto.People
+import com.fuadhev.mytayqatask.data.model.PeopleEntity
 import com.fuadhev.mytayqatask.databinding.ItemPersonBinding
-import com.google.android.material.imageview.ShapeableImageView
 
-class PersonAdapter : ListAdapter<People, PersonAdapter.NewsViewHolder>(GenericDiffUtil<People>(
+class PersonAdapter : ListAdapter<PeopleEntity, PersonAdapter.NewsViewHolder>(GenericDiffUtil<PeopleEntity>(
     myItemsTheSame = { oldItem, newItem -> oldItem.humanId == newItem.humanId },
     myContentsTheSame = { oldItem, newItem -> oldItem == newItem }
 )) {
@@ -18,7 +16,7 @@ class PersonAdapter : ListAdapter<People, PersonAdapter.NewsViewHolder>(GenericD
 
     inner class NewsViewHolder(val binding: ItemPersonBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: People) {
+        fun bind(item: PeopleEntity) {
             with(binding) {
                 val fullName=item.name+" "+item.surname
 

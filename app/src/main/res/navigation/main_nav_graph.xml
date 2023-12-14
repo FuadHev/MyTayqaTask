@@ -9,5 +9,14 @@
         android:id="@+id/personFragment"
         android:name="com.fuadhev.mytayqatask.ui.person.PersonFragment"
         android:label="fragment_person"
-        tools:layout="@layout/fragment_person" />
+        tools:layout="@layout/fragment_person" >
+        <action
+            android:id="@+id/action_personFragment_to_countryFilterDialogFragment"
+            app:destination="@id/countryFilterDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/countryFilterDialogFragment"
+        android:name="com.fuadhev.mytayqatask.ui.person.dialogs.CountryFilterDialogFragment"
+        android:label="CountryFilterDialogFragment"
+        tools:layout="@layout/country_dialog"/>
 </navigation>

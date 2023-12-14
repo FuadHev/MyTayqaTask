@@ -3,4 +3,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="txt_color">#AD7272</color>
+    <color name="status_bar_color">#00AADF</color>
 </resources>
