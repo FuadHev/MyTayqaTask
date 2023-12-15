@@ -16,5 +16,6 @@ data class CityEntity(
     @PrimaryKey
     val cityId: Int,
     val name: String,
-    val countryId:Int
+    val countryId:Int,
+    var isChecked:Boolean=true
 )

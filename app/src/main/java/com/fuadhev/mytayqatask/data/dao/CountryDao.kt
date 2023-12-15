@@ -11,11 +11,11 @@ import com.fuadhev.mytayqatask.data.model.PeopleEntity
 interface CountryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCountry(country: List<CountryEntity>):List<Long>
-
-//    @Query("SELECT*FROM peoples")
+    suspend fun insertCountry(country: List<CountryEntity>):List<Long>
 
 
+   @Query("SELECT*FROM countries")
+   suspend fun getCountries():List<CountryEntity>
 
 
 

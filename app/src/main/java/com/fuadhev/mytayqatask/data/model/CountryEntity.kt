@@ -8,7 +8,8 @@ import androidx.room.PrimaryKey
 data class CountryEntity (
     @PrimaryKey
     val countryId: Int,
-    val name: String
+    val name: String,
+    var isChecked:Boolean=true
 )
 //
 //

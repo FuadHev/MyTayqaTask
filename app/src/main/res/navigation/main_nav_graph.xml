@@ -13,10 +13,18 @@
         <action
             android:id="@+id/action_personFragment_to_countryFilterDialogFragment"
             app:destination="@id/countryFilterDialogFragment" />
+        <action
+            android:id="@+id/action_personFragment_to_cityFilterDialogFragment"
+            app:destination="@id/cityFilterDialogFragment" />
     </fragment>
     <dialog
         android:id="@+id/countryFilterDialogFragment"
         android:name="com.fuadhev.mytayqatask.ui.person.dialogs.CountryFilterDialogFragment"
         android:label="CountryFilterDialogFragment"
+        tools:layout="@layout/country_dialog"/>
+    <dialog
+        android:id="@+id/cityFilterDialogFragment"
+        android:name="com.fuadhev.mytayqatask.ui.person.dialogs.CityFilterDialogFragment"
+        android:label="CityFilterDialogFragment"
         tools:layout="@layout/country_dialog"/>
 </navigation>
