@@ -15,18 +15,11 @@ interface PersonDao {
     @Query("SELECT*FROM peoples")
     suspend fun getPeoples():List<PeopleEntity>
 
-
-//    @Query("SELECT * FROM peoples " +
-//            "INNER JOIN cities ON peoples.cityId = cities.cityId " +
-//            "INNER JOIN countries ON cities.countryId = countries.countryId " +
-//            "WHERE countries.countryId IN (:countryIds) AND cities.cityId IN (:cityIds)")
-//     fun getPeopleFromCertainCountriesAndCities(countryIds: List<Int>,cityIds:List<Int>): List<PeopleEntity>
-
     @Query("SELECT people.* FROM peoples AS people " +
             "INNER JOIN cities ON people.cityId = cities.cityId " +
             "INNER JOIN countries ON cities.countryId = countries.countryId " +
             "WHERE countries.countryId IN (:countryIds) AND cities.cityId IN (:cityIds)")
-    fun getPeopleFromCertainCountriesAndCities(countryIds: List<Int>, cityIds: List<Int>): List<PeopleEntity>
+    suspend fun getPeopleFromCertainCountriesAndCities(countryIds: List<Int>, cityIds: List<Int>): List<PeopleEntity>
 
 
 }

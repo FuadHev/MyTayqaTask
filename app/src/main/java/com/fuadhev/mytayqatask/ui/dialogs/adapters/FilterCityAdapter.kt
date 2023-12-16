@@ -1,4 +1,4 @@
-package com.fuadhev.mytayqatask.ui.person.adapters
+package com.fuadhev.mytayqatask.ui.dialogs.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -6,26 +6,23 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuadhev.mytayqatask.common.utils.GenericDiffUtil
+import com.fuadhev.mytayqatask.data.model.CityEntity
 import com.fuadhev.mytayqatask.data.model.CountryEntity
 import com.fuadhev.mytayqatask.databinding.ItemFilterOptionBinding
 
-class FilterCountryAdapter: ListAdapter<CountryEntity, FilterCountryAdapter.ViewHolder>(GenericDiffUtil<CountryEntity>(
+class FilterCityAdapter: ListAdapter<CityEntity, FilterCityAdapter.ViewHolder>(GenericDiffUtil<CityEntity>(
     myItemsTheSame = { oldItem, newItem -> oldItem.countryId == newItem.countryId },
     myContentsTheSame = { oldItem, newItem -> oldItem == newItem }
 )) {
 
-    lateinit var onclick:(CountryEntity,Boolean) -> Unit
 
     inner class ViewHolder(val binding: ItemFilterOptionBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CountryEntity) {
+        fun bind(item: CityEntity) {
             binding.checkBox.text=item.name
-            binding.checkBox.isChecked=item.isChecked
-            binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
-                item.isChecked = isChecked
-                Log.e("TAG", "bind: ${currentList.toString()}", )
-            }
+
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,6 +32,12 @@ class FilterCountryAdapter: ListAdapter<CountryEntity, FilterCountryAdapter.View
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+        val item=getItem(position)
+        holder.binding.checkBox.isChecked=item.isChecked
+        holder.binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            item.isChecked = isChecked
+            Log.e("TAG", "bind: ${currentList.toString()}", )
+        }
     }
 
 }

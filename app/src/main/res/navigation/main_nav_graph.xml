@@ -19,12 +19,12 @@
     </fragment>
     <dialog
         android:id="@+id/countryFilterDialogFragment"
-        android:name="com.fuadhev.mytayqatask.ui.person.dialogs.CountryFilterDialogFragment"
+        android:name="com.fuadhev.mytayqatask.ui.dialogs.CountryFilterDialogFragment"
         android:label="CountryFilterDialogFragment"
         tools:layout="@layout/country_dialog"/>
     <dialog
         android:id="@+id/cityFilterDialogFragment"
-        android:name="com.fuadhev.mytayqatask.ui.person.dialogs.CityFilterDialogFragment"
+        android:name="com.fuadhev.mytayqatask.ui.dialogs.CityFilterDialogFragment"
         android:label="CityFilterDialogFragment"
         tools:layout="@layout/country_dialog"/>
 </navigation>

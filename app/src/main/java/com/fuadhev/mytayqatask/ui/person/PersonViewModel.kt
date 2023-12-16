@@ -19,24 +19,30 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class PersonViewModel @Inject constructor(val repo: Repository, val db: PersonDB) : ViewModel() {
+class PersonViewModel @Inject constructor(private val repo: Repository, private val db: PersonDB) :
+    ViewModel() {
 
 
     private val _peopleData = MutableLiveData<List<PeopleEntity>>()
     val peopleData get() = _peopleData
 
-    val filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
+
+    private val _filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
+    val filterState get() = _filterState
+
     fun updateFilterStateCountries(countries: List<CountryEntity>) {
-        filterState.value = filterState.value!!.copy(
-            selectedCountryIds = countries
+        _filterState.value = _filterState.value!!.copy(
+            selectedCountries = countries
         )
         getCitiesFromDB()
     }
+
     fun updateFilterStateCities(cities: List<CityEntity>) {
-        filterState.value = filterState.value!!.copy(
-            selectedCityIds = cities
+        _filterState.value = _filterState.value!!.copy(
+            selectedCities = cities
         )
     }
+
     fun getPeoples() {
         viewModelScope.launch(IO) {
             val data = db.getPersonDao().getPeoples()
@@ -46,40 +52,43 @@ class PersonViewModel @Inject constructor(val repo: Repository, val db: PersonDB
             getCountriesFromDB()
         }
     }
-    fun getPeopleFromCertainCountriesAndCities(countryIds:List<Int>,cityIds:List<Int>){
+
+    fun getPeopleFromCertainCountriesAndCities(countryIds: List<Int>, cityIds: List<Int>) {
         viewModelScope.launch(IO) {
-            val peoples=db.getPersonDao().getPeopleFromCertainCountriesAndCities(countryIds,cityIds)
-            withContext(Main){
-                peopleData.value=peoples
+            val peoples =
+                db.getPersonDao().getPeopleFromCertainCountriesAndCities(countryIds, cityIds)
+            withContext(Main) {
+                peopleData.value = peoples
             }
 
         }
     }
-    fun getCountriesFromDB() {
+
+    private fun getCountriesFromDB() {
         viewModelScope.launch(IO) {
             val countries = db.getCountryDao().getCountries()
 
             withContext(Main) {
-                filterState.value = filterState.value?.copy(
-                    selectedCountryIds = countries
+                _filterState.value = _filterState.value?.copy(
+                    selectedCountries = countries
                 )
             }
             getCitiesFromDB()
         }
     }
 
-    fun getCitiesFromDB() {
+    private fun getCitiesFromDB() {
         viewModelScope.launch(IO) {
-          val countriesIds=filterState.value!!.selectedCountryIds.asSequence()
-                .filter { it.isChecked }
-                .map {
+            val countriesIds = _filterState.value?.selectedCountries?.asSequence()?.filter {
+                it.isChecked
+            }?.map {
                 it.countryId
-            }.toList()
+            }?.toList()
 
             val cities = db.getCityDao().getCitiesByCountryIds(countriesIds ?: emptyList())
             withContext(Main) {
-                filterState.value = filterState.value?.copy(
-                    selectedCityIds = cities
+                _filterState.value = _filterState.value?.copy(
+                    selectedCities = cities
                 )
             }
         }
@@ -88,48 +97,50 @@ class PersonViewModel @Inject constructor(val repo: Repository, val db: PersonDB
 
     fun getCountriesData() {
         viewModelScope.launch(IO) {
-            val response = repo.getCountryData()
-            if (response.isSuccessful) {
-                val responseData = response.body()
-                val countryDao = db.getCountryDao()
-                val peopleDao = db.getPersonDao()
-                val cityDao = db.getCityDao()
-                responseData?.let {
-                    val countries = responseData.countryList
-                    val countryEntities = countries.map {
-                        CountryEntity(it.countryId, it.name, true)
-                    }
-                    countryDao.insertCountry(countryEntities)
-                    countries.forEach { country ->
-
-                        val cities = country.cityList.map { city ->
-                            cityDao.insertCity(
-                                CityEntity(
-                                    city.cityId,
-                                    city.name,
-                                    country.countryId
-                                )
-                            )
-                            val people = city.peopleList.map { people ->
-
-                                peopleDao.insertPerson(
-                                    PeopleEntity(
-                                        people.humanId,
-                                        people.name,
-                                        people.surname,
-                                        city.cityId
+            try {
+                val response = repo.getCountryData()
+                if (response.isSuccessful) {
+                    val responseData = response.body()
+                    val countryDao = db.getCountryDao()
+                    val peopleDao = db.getPersonDao()
+                    val cityDao = db.getCityDao()
+                    responseData?.let {
+                        val countries = responseData.countryList
+                        val countryEntities = countries.map {
+                            CountryEntity(it.countryId, it.name, true)
+                        }
+                        countryDao.insertCountry(countryEntities)
+                        countries.forEach { country ->
+                            val cities = country.cityList.map { city ->
+                                cityDao.insertCity(
+                                    CityEntity(
+                                        city.cityId,
+                                        city.name,
+                                        country.countryId
                                     )
                                 )
-
-                                true
+                                val people = city.peopleList.map { people ->
+                                    peopleDao.insertPerson(
+                                        PeopleEntity(
+                                            people.humanId,
+                                            people.name,
+                                            people.surname,
+                                            city.cityId
+                                        )
+                                    )
+                                    true
+                                }
                             }
                         }
+                        getPeoples()
                     }
+                } else {
                     getPeoples()
-
                 }
-
+            }catch (e:Exception){
+                getPeoples()
             }
+
         }
 
 

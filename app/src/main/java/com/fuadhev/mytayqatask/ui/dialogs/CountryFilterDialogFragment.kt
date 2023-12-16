@@ -1,27 +1,33 @@
-package com.fuadhev.mytayqatask.ui.person.dialogs
+package com.fuadhev.mytayqatask.ui.dialogs
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.util.copy
+import com.fuadhev.mytayqatask.data.model.CountryEntity
 import com.fuadhev.mytayqatask.databinding.CountryDialogBinding
 import com.fuadhev.mytayqatask.ui.person.PersonViewModel
-import com.fuadhev.mytayqatask.ui.person.adapters.FilterCityAdapter
+import com.fuadhev.mytayqatask.ui.dialogs.adapters.FilterCountryAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
-class CityFilterDialogFragment : DialogFragment() {
+@AndroidEntryPoint
+class CountryFilterDialogFragment : DialogFragment() {
+
     private var _binding: CountryDialogBinding? = null
     private val binding get() = _binding!!
 
-    private val cityAdapter by lazy {
-        FilterCityAdapter()
+    private val countryAdapter by lazy {
+        FilterCountryAdapter()
     }
 
-    private val viewModel by viewModels<PersonViewModel>(ownerProducer = {
-        requireActivity()
-    })
+    private val viewModel by activityViewModels<PersonViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,27 +35,40 @@ class CityFilterDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = CountryDialogBinding.inflate(inflater, container, false)
+
+        binding.rvFilterItems.adapter = countryAdapter
         return binding.root
     }
 
-    fun observes() {
+    private fun observes() {
         viewModel.filterState.observe(viewLifecycleOwner) {
-            cityAdapter.submitList(it.selectedCityIds)
+            val countries = it.selectedCountries.map { country ->
+                country.copy()
+            }
+            countryAdapter.submitList(countries)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvFilterItems.adapter = cityAdapter
+
         observes()
+
         binding.btnFilter.setOnClickListener {
-          viewModel.updateFilterStateCities(cityAdapter.currentList)
+            viewModel.updateFilterStateCountries(countryAdapter.currentList)
+            dismiss()
         }
 
+
+        binding.btnCancel.setOnClickListener {
+            dismiss()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.filterState.removeObservers(viewLifecycleOwner)
         _binding = null
+
     }
 }

@@ -6,10 +6,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class Repository @Inject constructor(private val api: PersonApiService) {
-
     suspend fun getCountryData(): Response<CountryResponse> {
         return api.getCountryData()
     }
-
-
 }

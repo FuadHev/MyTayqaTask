@@ -1,50 +1,58 @@
 package com.fuadhev.mytayqatask.ui.person
 
 import android.util.Log
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fuadhev.mytayqatask.common.base.BaseFragment
+import com.fuadhev.mytayqatask.common.utils.Extensions.showMessage
 import com.fuadhev.mytayqatask.common.utils.isOnline
 import com.fuadhev.mytayqatask.databinding.FragmentPersonBinding
+import com.shashank.sony.fancytoastlib.FancyToast
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.logging.Handler
 import javax.security.auth.login.LoginException
 
 @AndroidEntryPoint
 class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding::inflate) {
 
-    private val viewModel by viewModels<PersonViewModel>(
-        ownerProducer = { requireActivity() }
-    )
+    private val viewModel by activityViewModels<PersonViewModel>()
 
     private val personAdapter by lazy {
         PersonAdapter()
     }
 
-
     override fun observeEvents() {
         viewModel.peopleData.observe(viewLifecycleOwner) {
+            if (it.isEmpty()) {
+                requireActivity().showMessage("No Local Data",FancyToast.INFO)
+                getPeoplesData()
+
+            }
             personAdapter.submitList(it)
         }
-        viewModel.filterState.observe(viewLifecycleOwner) {filterState->
-            if (filterState.selectedCityIds.isNotEmpty() && filterState.selectedCountryIds.isNotEmpty()) {
-                val cityIds=filterState.selectedCityIds.asSequence().filter {
+        viewModel.filterState.observe(viewLifecycleOwner) { filterState ->
+            if (filterState.selectedCities.isNotEmpty() && filterState.selectedCountries.isNotEmpty()) {
+                val cityIds = filterState.selectedCities.asSequence().filter {
                     it.isChecked
-                }.map { city->
+                }.map { city ->
                     city.cityId
                 }.toList()
-                val countryIds=filterState.selectedCountryIds.asSequence()
+                val countryIds = filterState.selectedCountries.asSequence()
                     .filter { it.isChecked }
-                    .map {country->
+                    .map { country ->
                         country.countryId
                     }.toList()
-                viewModel.getPeopleFromCertainCountriesAndCities(countryIds,cityIds)
+                viewModel.getPeopleFromCertainCountriesAndCities(countryIds, cityIds)
             }
         }
-
 
     }
 
     override fun setupListeners() {
+
+        /** Dialogu 1 fragmente saxlaya bilerdim argument gondererek ona uygun
+         quracaqdim sadece ayirmaq indi daha rahat geldi deye bele etdim **/
         binding.icCountry.setOnClickListener {
             findNavController().navigate(PersonFragmentDirections.actionPersonFragmentToCountryFilterDialogFragment())
         }
@@ -52,25 +60,23 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
             findNavController().navigate(PersonFragmentDirections.actionPersonFragmentToCityFilterDialogFragment())
         }
         binding.swipeRefresh.setOnRefreshListener {
-            if (isOnline(requireContext())) {
-                viewModel.getCountriesData()
-            } else {
-                viewModel.getPeoples()
-            }
+            getPeoplesData()
             binding.swipeRefresh.isRefreshing = false
-
         }
+
     }
 
-
-    override fun onCreateFinish() {
-
+    private fun getPeoplesData() {
         if (isOnline(requireContext())) {
             viewModel.getCountriesData()
         } else {
+            requireActivity().showMessage("No Internet Connection. Local data is Loading",FancyToast.INFO)
             viewModel.getPeoples()
         }
+    }
 
+    override fun onCreateFinish() {
+        viewModel.getPeoples()
         binding.rvPerson.adapter = personAdapter
     }
 

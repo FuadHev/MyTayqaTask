@@ -4,6 +4,6 @@ import com.fuadhev.mytayqatask.data.model.CityEntity
 import com.fuadhev.mytayqatask.data.model.CountryEntity
 
 data class FilterState(
-    val selectedCountryIds: List<CountryEntity> = emptyList(),
-    val selectedCityIds: List<CityEntity> = emptyList()
+    val selectedCountries: List<CountryEntity> = emptyList(),
+    val selectedCities: List<CityEntity> = emptyList()
 )
