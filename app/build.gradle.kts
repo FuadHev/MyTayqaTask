@@ -89,8 +89,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
 
-    //Coil
-    implementation("io.coil-kt:coil:2.2.1")
     //Room
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.room:room-runtime:$roomVersion")
@@ -100,8 +98,6 @@ dependencies {
     //Hilt
     implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-android-compiler:2.49")
-    //Security
-    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
     //Fancy toast
     implementation("io.github.shashank02051997:FancyToast:2.0.2")
 }

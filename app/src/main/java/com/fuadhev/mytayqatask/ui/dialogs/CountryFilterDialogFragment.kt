@@ -11,10 +11,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.util.copy
-import com.fuadhev.mytayqatask.data.model.CountryEntity
+import com.fuadhev.mytayqatask.common.utils.Extensions.showMessage
+import com.fuadhev.mytayqatask.data.local.model.CountryEntity
 import com.fuadhev.mytayqatask.databinding.CountryDialogBinding
 import com.fuadhev.mytayqatask.ui.person.PersonViewModel
 import com.fuadhev.mytayqatask.ui.dialogs.adapters.FilterCountryAdapter
+import com.shashank.sony.fancytoastlib.FancyToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -55,6 +57,10 @@ class CountryFilterDialogFragment : DialogFragment() {
         observes()
 
         binding.btnFilter.setOnClickListener {
+            if (countryAdapter.currentList.all { !it.isChecked }){
+                requireActivity().showMessage("You must choose at least 1 country",FancyToast.ERROR)
+                return@setOnClickListener
+            }
             viewModel.updateFilterStateCountries(countryAdapter.currentList)
             dismiss()
         }

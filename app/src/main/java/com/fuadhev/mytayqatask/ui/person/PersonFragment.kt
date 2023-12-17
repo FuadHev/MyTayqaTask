@@ -24,10 +24,8 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
 
     override fun observeEvents() {
         viewModel.peopleData.observe(viewLifecycleOwner) {
-            if (it.isEmpty()) {
-                requireActivity().showMessage("No Local Data",FancyToast.INFO)
+            if (it.isEmpty()){
                 getPeoplesData()
-
             }
             personAdapter.submitList(it)
         }

@@ -1,4 +1,4 @@
-package com.fuadhev.mytayqatask.data.model
+package com.fuadhev.mytayqatask.data.local.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

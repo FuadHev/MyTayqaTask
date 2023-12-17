@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.fuadhev.mytayqatask.common.utils.Extensions.showMessage
 import com.fuadhev.mytayqatask.databinding.CountryDialogBinding
 import com.fuadhev.mytayqatask.ui.person.PersonViewModel
 import com.fuadhev.mytayqatask.ui.dialogs.adapters.FilterCityAdapter
+import com.shashank.sony.fancytoastlib.FancyToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,6 +49,10 @@ class CityFilterDialogFragment : DialogFragment() {
         binding.rvFilterItems.adapter = cityAdapter
         observes()
         binding.btnFilter.setOnClickListener {
+            if (cityAdapter.currentList.all { !it.isChecked }){
+                requireActivity().showMessage("You must choose at least 1 city", FancyToast.ERROR)
+                return@setOnClickListener
+            }
             viewModel.updateFilterStateCities(cityAdapter.currentList)
             dismiss()
         }

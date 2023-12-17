@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuadhev.mytayqatask.common.utils.GenericDiffUtil
-import com.fuadhev.mytayqatask.data.model.CityEntity
-import com.fuadhev.mytayqatask.data.model.CountryEntity
+import com.fuadhev.mytayqatask.data.local.model.CityEntity
+import com.fuadhev.mytayqatask.data.local.model.CountryEntity
 import com.fuadhev.mytayqatask.databinding.ItemFilterOptionBinding
 
 class FilterCityAdapter: ListAdapter<CityEntity, FilterCityAdapter.ViewHolder>(GenericDiffUtil<CityEntity>(

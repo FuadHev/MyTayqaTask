@@ -1,16 +1,16 @@
-package com.fuadhev.mytayqatask.data.dao
+package com.fuadhev.mytayqatask.data.local.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.fuadhev.mytayqatask.data.model.PeopleEntity
+import com.fuadhev.mytayqatask.data.local.model.PeopleEntity
 
 @Dao
 interface PersonDao {
 
     @Upsert
-    suspend fun insertPerson(person:PeopleEntity):Long
+    suspend fun insertPerson(person: PeopleEntity):Long
 
     @Query("SELECT*FROM peoples")
     suspend fun getPeoples():List<PeopleEntity>

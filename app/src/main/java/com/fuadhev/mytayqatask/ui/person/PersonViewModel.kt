@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fuadhev.mytayqatask.common.utils.isOnline
 import com.fuadhev.mytayqatask.data.local.PersonDB
-import com.fuadhev.mytayqatask.data.model.CityEntity
-import com.fuadhev.mytayqatask.data.model.CountryEntity
-import com.fuadhev.mytayqatask.data.model.PeopleEntity
+import com.fuadhev.mytayqatask.data.local.model.CityEntity
+import com.fuadhev.mytayqatask.data.local.model.CountryEntity
+import com.fuadhev.mytayqatask.data.local.model.PeopleEntity
 import com.fuadhev.mytayqatask.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
@@ -23,9 +23,8 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
     ViewModel() {
 
 
-    private val _peopleData = MutableLiveData<List<PeopleEntity>>()
+    private val _peopleData = MutableLiveData<List<PeopleEntity>>(emptyList())
     val peopleData get() = _peopleData
-
 
     private val _filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
     val filterState get() = _filterState
@@ -47,7 +46,10 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
         viewModelScope.launch(IO) {
             val data = db.getPersonDao().getPeoples()
             withContext(Main) {
-                _peopleData.value = data
+                if (data.isNotEmpty()) {
+                    _peopleData.value = data
+                }
+
             }
             getCountriesFromDB()
         }
@@ -132,12 +134,10 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                                 }
                             }
                         }
-                        getPeoples()
                     }
-                } else {
                     getPeoples()
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 getPeoples()
             }
 
@@ -145,5 +145,6 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
 
 
     }
+
 
 }

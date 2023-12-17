@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuadhev.mytayqatask.common.utils.GenericDiffUtil
-import com.fuadhev.mytayqatask.data.model.PeopleEntity
+import com.fuadhev.mytayqatask.data.local.model.PeopleEntity
 import com.fuadhev.mytayqatask.databinding.ItemPersonBinding
 
 class PersonAdapter : ListAdapter<PeopleEntity, PersonAdapter.ViewHolder>(GenericDiffUtil<PeopleEntity>(

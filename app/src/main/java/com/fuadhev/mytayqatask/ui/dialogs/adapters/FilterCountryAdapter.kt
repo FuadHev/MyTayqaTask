@@ -6,7 +6,7 @@ import android.widget.CheckBox
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuadhev.mytayqatask.common.utils.GenericDiffUtil
-import com.fuadhev.mytayqatask.data.model.CountryEntity
+import com.fuadhev.mytayqatask.data.local.model.CountryEntity
 import com.fuadhev.mytayqatask.databinding.ItemFilterOptionBinding
 
 class FilterCountryAdapter :
