@@ -23,12 +23,16 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
     }
 
     override fun observeEvents() {
-        viewModel.peopleData.observe(viewLifecycleOwner) {
-            if (it.isEmpty()){
+        viewModel.localDataIsEmpty.observe(viewLifecycleOwner){
+            if (it){
+
                 getPeoplesData()
             }
+        }
+        viewModel.peopleData.observe(viewLifecycleOwner) {
             personAdapter.submitList(it)
         }
+
         viewModel.filterState.observe(viewLifecycleOwner) { filterState ->
             if (filterState.selectedCities.isNotEmpty() && filterState.selectedCountries.isNotEmpty()) {
                 val cityIds = filterState.selectedCities.asSequence().filter {
@@ -51,6 +55,7 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
 
         /** Dialogu 1 fragmente saxlaya bilerdim argument gondererek ona uygun
          quracaqdim sadece ayirmaq indi daha rahat geldi deye bele etdim **/
+
         binding.icCountry.setOnClickListener {
             findNavController().navigate(PersonFragmentDirections.actionPersonFragmentToCountryFilterDialogFragment())
         }

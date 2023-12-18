@@ -22,7 +22,6 @@ class FilterCountryAdapter :
 
             binding.checkBox.text = item.name
             binding.checkBox.isChecked = item.isChecked
-
             binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
                 item.isChecked = isChecked
 

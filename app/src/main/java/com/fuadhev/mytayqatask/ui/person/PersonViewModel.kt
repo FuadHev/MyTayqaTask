@@ -26,6 +26,9 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
     private val _peopleData = MutableLiveData<List<PeopleEntity>>(emptyList())
     val peopleData get() = _peopleData
 
+    private val _localDataIsEmpty = MutableLiveData<Boolean>(true)
+    val localDataIsEmpty get() = _localDataIsEmpty
+
     private val _filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
     val filterState get() = _filterState
 
@@ -46,9 +49,11 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
         viewModelScope.launch(IO) {
             val data = db.getPersonDao().getPeoples()
             withContext(Main) {
-                if (data.isNotEmpty()) {
-                    _peopleData.value = data
+                _peopleData.value = data
+                if (data.isNotEmpty()){
+                    _localDataIsEmpty.value = false
                 }
+
 
             }
             getCountriesFromDB()
@@ -135,14 +140,14 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                             }
                         }
                     }
-                    getPeoples()
+
                 }
+                getPeoples()
             } catch (e: Exception) {
                 getPeoples()
             }
 
         }
-
 
     }
 

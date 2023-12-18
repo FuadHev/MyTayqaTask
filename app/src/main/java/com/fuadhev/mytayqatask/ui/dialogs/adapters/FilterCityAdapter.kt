@@ -36,7 +36,6 @@ class FilterCityAdapter: ListAdapter<CityEntity, FilterCityAdapter.ViewHolder>(G
         holder.binding.checkBox.isChecked=item.isChecked
         holder.binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
             item.isChecked = isChecked
-            Log.e("TAG", "bind: ${currentList.toString()}", )
         }
     }
 
