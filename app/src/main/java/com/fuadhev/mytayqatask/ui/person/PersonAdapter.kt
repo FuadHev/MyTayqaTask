@@ -14,7 +14,7 @@ class PersonAdapter : ListAdapter<PeopleEntity, PersonAdapter.ViewHolder>(Generi
 )) {
 
 
-    inner class ViewHolder(val binding: ItemPersonBinding) :
+    inner class ViewHolder(private val binding: ItemPersonBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PeopleEntity) {
             with(binding) {

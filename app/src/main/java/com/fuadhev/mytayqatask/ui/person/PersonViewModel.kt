@@ -1,10 +1,8 @@
 package com.fuadhev.mytayqatask.ui.person
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fuadhev.mytayqatask.common.utils.isOnline
 import com.fuadhev.mytayqatask.data.local.PersonDB
 import com.fuadhev.mytayqatask.data.local.model.CityEntity
 import com.fuadhev.mytayqatask.data.local.model.CountryEntity
@@ -13,7 +11,6 @@ import com.fuadhev.mytayqatask.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,17 +23,14 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
     private val _peopleData = MutableLiveData<List<PeopleEntity>>(emptyList())
     val peopleData get() = _peopleData
 
-    private val _localDataIsEmpty = MutableLiveData(true)
-    val localDataIsEmpty get() = _localDataIsEmpty
-
     private val _filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
     val filterState get() = _filterState
+
 
     fun updateFilterStateCountries(countries: List<CountryEntity>) {
         _filterState.value = _filterState.value!!.copy(
             selectedCountries = countries
         )
-        getCitiesFromDB()
     }
 
     fun updateFilterStateCities(cities: List<CityEntity>) {
@@ -45,31 +39,31 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
         )
     }
 
-    fun getPeoples() {
+    fun getLocalPeoplesData() {
         viewModelScope.launch(IO) {
             val data = db.getPersonDao().getPeoples()
             withContext(Main) {
-                _peopleData.value = data
                 if (data.isNotEmpty()) {
-                    _localDataIsEmpty.value = false
+                    _peopleData.value = data
                 }
             }
-            getCountriesFromDB()
+            getCountriesCitiesFromLocal()
         }
     }
 
-    fun getPeopleFromCertainCountriesAndCities(countryIds: List<Int>, cityIds: List<Int>) {
+    fun getFilterData(countryIds: List<Int>, cityIds: List<Int>) {
         viewModelScope.launch(IO) {
-            val peoples =
+            val peoplesData =
                 db.getPersonDao().getPeopleFromCertainCountriesAndCities(countryIds, cityIds)
             withContext(Main) {
-                peopleData.value = peoples
+                if (peoplesData.isNotEmpty()) {
+                    peopleData.value = peoplesData
+                }
             }
-
         }
     }
 
-    private fun getCountriesFromDB() {
+    private fun getCountriesCitiesFromLocal() {
         viewModelScope.launch(IO) {
             val countries = db.getCountryDao().getCountries()
 
@@ -78,17 +72,17 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                     selectedCountries = countries
                 )
             }
-            getCitiesFromDB()
+            setFilterCitiesFromLocal(countries)
         }
     }
 
-    private fun getCitiesFromDB() {
+    fun setFilterCitiesFromLocal(selectedCountries:List<CountryEntity>) {
         viewModelScope.launch(IO) {
-            val countriesIds = _filterState.value?.selectedCountries?.asSequence()?.filter {
+            val countriesIds = selectedCountries.asSequence().filter {
                 it.isChecked
-            }?.map {
+            }.map {
                 it.countryId
-            }?.toList()
+            }.toList()
 
             val cities = db.getCityDao().getCitiesByCountryIds(countriesIds ?: emptyList())
             withContext(Main) {
@@ -100,7 +94,9 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
     }
 
 
-    fun getCountriesData() {
+    fun getRemoteData() {
+        /** Sealed Resource classi istifade ede bilerdim ozum etmemisem sade sekilde try catch ile isletdim
+         **/
         viewModelScope.launch(IO) {
             try {
                 val response = repo.getCountryData()
@@ -116,7 +112,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                         }
                         countryDao.insertCountry(countryEntities)
                         countries.forEach { country ->
-                            val cities = country.cityList.map { city ->
+                            country.cityList.forEach { city ->
                                 cityDao.insertCity(
                                     CityEntity(
                                         city.cityId,
@@ -124,7 +120,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                                         country.countryId
                                     )
                                 )
-                                val people = city.peopleList.map { people ->
+                                city.peopleList.forEach { people ->
                                     peopleDao.insertPerson(
                                         PeopleEntity(
                                             people.humanId,
@@ -133,16 +129,15 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                                             city.cityId
                                         )
                                     )
-                                    true
                                 }
                             }
                         }
                     }
 
                 }
-                getPeoples()
+                getLocalPeoplesData()
             } catch (e: Exception) {
-                getPeoples()
+                getLocalPeoplesData()
             }
 
         }
