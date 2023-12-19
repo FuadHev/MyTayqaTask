@@ -1,5 +1,6 @@
 package com.fuadhev.mytayqatask.ui.person
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +21,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
     ViewModel() {
 
 
-    private val _peopleData = MutableLiveData<List<PeopleEntity>>(emptyList())
+    private val _peopleData = MutableLiveData<List<PeopleEntity>>()
     val peopleData get() = _peopleData
 
     private val _filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
@@ -39,17 +40,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
         )
     }
 
-    fun getLocalPeoplesData() {
-        viewModelScope.launch(IO) {
-            val data = db.getPersonDao().getPeoples()
-            withContext(Main) {
-                if (data.isNotEmpty()) {
-                    _peopleData.value = data
-                }
-            }
-            getCountriesCitiesFromLocal()
-        }
-    }
+    fun getLocalPeoplesData() =db.getPersonDao().getPeoples()
 
     fun getFilterData(countryIds: List<Int>, cityIds: List<Int>) {
         viewModelScope.launch(IO) {
@@ -63,7 +54,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
         }
     }
 
-    private fun getCountriesCitiesFromLocal() {
+     fun getCountriesCitiesFromLocal() {
         viewModelScope.launch(IO) {
             val countries = db.getCountryDao().getCountries()
 
@@ -76,7 +67,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
         }
     }
 
-    fun setFilterCitiesFromLocal(selectedCountries:List<CountryEntity>) {
+    fun setFilterCitiesFromLocal(selectedCountries: List<CountryEntity>) {
         viewModelScope.launch(IO) {
             val countriesIds = selectedCountries.asSequence().filter {
                 it.isChecked

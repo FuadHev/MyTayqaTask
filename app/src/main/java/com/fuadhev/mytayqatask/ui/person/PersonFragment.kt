@@ -19,12 +19,19 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
     }
 
     override fun observeEvents() {
-
-        viewModel.peopleData.observe(viewLifecycleOwner) {
+        viewModel.getLocalPeoplesData().observe(viewLifecycleOwner){
             if (it.isEmpty()) {
                 getPeoplesData()
+            }else{
+                personAdapter.submitList(it)
+                viewModel.getCountriesCitiesFromLocal()
             }
-            personAdapter.submitList(it)
+
+        }
+        viewModel.peopleData.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()){
+                personAdapter.submitList(it)
+            }
         }
 
         viewModel.filterState.observe(viewLifecycleOwner) { filterState ->
@@ -34,7 +41,6 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
                 }.map { city ->
                     city.cityId
                 }.toList()
-
                 val countryIds = filterState.selectedCountries.asSequence()
                     .filter { it.isChecked }
                     .map { country ->
@@ -74,11 +80,11 @@ class PersonFragment : BaseFragment<FragmentPersonBinding>(FragmentPersonBinding
                 FancyToast.INFO
             )
             viewModel.getLocalPeoplesData()
+            viewModel.getCountriesCitiesFromLocal()
         }
     }
 
     override fun onCreateFinish() {
-        viewModel.getLocalPeoplesData()
         binding.rvPerson.adapter = personAdapter
     }
 
