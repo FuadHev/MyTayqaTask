@@ -26,7 +26,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
     private val _peopleData = MutableLiveData<List<PeopleEntity>>(emptyList())
     val peopleData get() = _peopleData
 
-    private val _localDataIsEmpty = MutableLiveData<Boolean>(true)
+    private val _localDataIsEmpty = MutableLiveData(true)
     val localDataIsEmpty get() = _localDataIsEmpty
 
     private val _filterState = MutableLiveData(FilterState(emptyList(), emptyList()))
@@ -50,11 +50,9 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
             val data = db.getPersonDao().getPeoples()
             withContext(Main) {
                 _peopleData.value = data
-                if (data.isNotEmpty()){
+                if (data.isNotEmpty()) {
                     _localDataIsEmpty.value = false
                 }
-
-
             }
             getCountriesFromDB()
         }
@@ -114,7 +112,7 @@ class PersonViewModel @Inject constructor(private val repo: Repository, private 
                     responseData?.let {
                         val countries = responseData.countryList
                         val countryEntities = countries.map {
-                            CountryEntity(it.countryId, it.name, true)
+                            CountryEntity(it.countryId, it.name)
                         }
                         countryDao.insertCountry(countryEntities)
                         countries.forEach { country ->

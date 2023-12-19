@@ -9,5 +9,5 @@ data class CountryEntity (
     @PrimaryKey
     val countryId: Int,
     val name: String,
-    var isChecked:Boolean
+    var isChecked:Boolean=true
 )

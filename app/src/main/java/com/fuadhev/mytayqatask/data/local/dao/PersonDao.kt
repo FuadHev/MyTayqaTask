@@ -1,6 +1,5 @@
 package com.fuadhev.mytayqatask.data.local.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
@@ -20,6 +19,5 @@ interface PersonDao {
             "INNER JOIN countries ON cities.countryId = countries.countryId " +
             "WHERE countries.countryId IN (:countryIds) AND cities.cityId IN (:cityIds)")
     suspend fun getPeopleFromCertainCountriesAndCities(countryIds: List<Int>, cityIds: List<Int>): List<PeopleEntity>
-
 
 }
